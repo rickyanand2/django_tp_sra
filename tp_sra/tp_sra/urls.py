@@ -14,9 +14,35 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path
 
+# To include app URL.CONF
+from django.urls import include
+
+# To include redirect functionality
+from django.views.generic import RedirectView
+
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path("admin/", admin.site.urls),
 ]
+
+# Use include() to add paths from the thirdparty application
+
+urlpatterns += [
+    path("thirdparty/", include("thirdparty.urls")),
+]
+
+# Add URL maps to redirect the base URL to our application
+
+urlpatterns += [
+    path("", RedirectView.as_view(url="thirdparty/", permanent=True)),
+]
+
+# Use static() to add URL mapping to serve static files during development (only)
+from django.conf import settings
+from django.conf.urls.static import static
+
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
